@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import * as THREE from 'three';
 import { ChakraProvider, Flex, Image, Box } from '@chakra-ui/react';
 import LinkCard from './components/LinkCard';
+
 interface Link {
   title: string;
   description: string;
@@ -11,101 +12,109 @@ interface Link {
 
 const links: Link[] = [
   {
-    title: 'Link 1',
+    title: 'LinkedIn',
     description: 'Description for Link 1',
     url: 'https://example.com/link1',
   },
   {
-    title: 'Link 2',
+    title: 'GitHub',
+    description: 'Description for Link 2',
+    url: 'https://example.com/link2',
+  },
+  {
+    title: 'Instagram',
     description: 'Description for Link 2',
     url: 'https://example.com/link2',
   },
   // Add more links as needed
 ];
 
-
-
 const Links: React.FC = () => {
   useEffect(() => {
-    const MyCanvas = document.getElementById('MyCanvas') as HTMLCanvasElement;
+    const canvas = document.getElementById('MyCanvas') as HTMLCanvasElement;
+    
     const scene = new THREE.Scene();
-
-    // Adjust the initial camera aspect ratio based on the canvas size
-    const camera = new THREE.PerspectiveCamera(75, MyCanvas.clientWidth / MyCanvas.clientHeight, 0.1, 1000);
+    
+    const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
     
     const renderer = new THREE.WebGLRenderer({
-      canvas: MyCanvas,
+      canvas: canvas,
     });
-    renderer.setSize(MyCanvas.clientWidth, MyCanvas.clientHeight);
-
-    // Handle window resize
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    
     const handleResize = () => {
       const newWidth = window.innerWidth;
       const newHeight = window.innerHeight;
-      // Update camera aspect ratio and renderer size
       camera.aspect = newWidth / newHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(newWidth, newHeight);
     };
-
-    // Listen for window resize events
+    
     window.addEventListener('resize', handleResize);
-
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
-
+    
+    const geometry = new THREE.SphereGeometry(1, 32, 32);
+    const textureLoader = new THREE.TextureLoader();
+    const texture = textureLoader.load('./assets/fullmapb.jpg'); // Replace with the path to your image
+    const material = new THREE.MeshStandardMaterial({ map: texture });
+    const sphere = new THREE.Mesh(geometry, material);
+    scene.add(sphere);
+    
     camera.position.z = 5;
 
-    const animate = () => {
-      requestAnimationFrame(animate);
 
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.01;
 
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 5);
+    directionalLight.position.set(1, 1, 1);
+    directionalLight.castShadow = true;
+    scene.add(directionalLight);
+    const animateSphere = () => {
+      //sphere.rotation.x += 0.01;
+      sphere.rotation.y += 0.01;
+      requestAnimationFrame(animateSphere);
       renderer.render(scene, camera);
     };
-    animate();
+    
+    animateSphere();
+    
     return () => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
 
   return (
-    <body>
-      <canvas id="MyCanvas" style={{ width: '100%', height: '100vh' }}></canvas>
+    <div>
+      <canvas id="MyCanvas" style={{ width: '100%', height: '100vh' }}></canvas>  
+      
       <ChakraProvider>
         <Flex
           direction="column"
           align="center"
-          justify="space-evenly"
+          justify="center"
           minH="100vh"
           overflowY="auto"
           py={20}
           bg="rgba(0, 0, 0, 0.1)"
-          position={"absolute"}
+          position="absolute"
           top="0"
-          width = {"100%"}
+          width="100%"
         >
           <Image
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfXpi1Nrns6Lg_qmU2V4jJ4kexQbqsgKyCxg&usqp=CAU"
+            src="./assets/Seiti.jpg"
             alt="Logo"
             boxSize={120}
-            align={"center"}
+            align="center"
             my={6}
-            borderRadius='full'
-            fit={'cover'}
+            borderRadius="full"
+            fit="cover"
           />
-
-          <Box width={'70%'} maxWidth={'1200px'}>
+          <Box width="70%" maxWidth="1200px">
             {links.map((link, index) => (
               <LinkCard key={index} {...link} />
             ))}
           </Box>
         </Flex>
       </ChakraProvider>
-    </body>
+    </div>
   );
 };
 

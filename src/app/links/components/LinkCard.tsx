@@ -22,12 +22,11 @@ const LinkCard: React.FC<LinkCardProps> = ({ title, description, url }) => {
         _hover={{ bg: 'gray.300' }}
         rounded="full"  // Use rounded without quotes
         transition="all 0.3s"
-        bg="rgba(240, 240, 240, 0.3)"
+        bg="rgba(240, 240, 240, 0.8)"
       >
         <Heading fontSize="xl" color="blue.900">
           {title}
         </Heading>
-        <Text color="gray.600">{description}</Text>
       </Box>
     </a>
   );
