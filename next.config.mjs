@@ -1,9 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     // Enable client-side rendering for specific pages
-    exportPathMap: async function () {
+    async generateStaticParams() {
       return {
         '/links': { page: '/links', asPath: '/links' },
+        // Add more paths here if needed
       };
     },
   
