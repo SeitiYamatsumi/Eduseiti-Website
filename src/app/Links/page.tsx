@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import * as THREE from 'three';
 import { ChakraProvider, Flex, Image, Box } from '@chakra-ui/react';
-import LinkCard from './components/LinkCard';
+import LinkCard from '../components/LinkCard';
 
 interface Link {
   title: string;
