@@ -58,23 +58,68 @@ const Links: React.FC = () => {
     const material = new THREE.MeshStandardMaterial({ map: texture });
     const sphere = new THREE.Mesh(geometry, material);
     scene.add(sphere);
+
+    // Load Milky Way texture
+    const loader = new THREE.TextureLoader();
+    const milkyWayTexture = loader.load('./assets/milky way.jpg');
     
-    camera.position.z = 5;
+    // Create sphere for the Milky Way background
+    const sphereGeometry = new THREE.SphereGeometry(900, 32, 32); // Large sphere to encompass the scene
+    const sphereMaterial = new THREE.MeshBasicMaterial({ map: milkyWayTexture, side: THREE.BackSide });
+    const backgroundSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+    // Reduce the brightness by adjusting the color
+    backgroundSphere.material.color = new THREE.Color(0.13, 0.11, 0.2); // Adjust the RGB values as needed
+    scene.add(backgroundSphere);
+    sphereGeometry.rotateZ(Math.PI /7)
+    sphereGeometry.rotateY(Math.PI /4)
+// Function to create random stars
+    function createStars() {
+      const starsGeometry = new THREE.BufferGeometry();
+      const starsPositions = [];
 
+      for (let i = 0; i < 1000; i++) {
+          const x = THREE.MathUtils.randFloatSpread(800);
+          const y = THREE.MathUtils.randFloatSpread(800);
+          const z = THREE.MathUtils.randFloatSpread(800);
+          starsPositions.push(x, y, z);
+      }
 
+      starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starsPositions, 3));
+
+      const starsMaterial = new THREE.PointsMaterial({ color: 0xffefdf });
+      const starField = new THREE.Points(starsGeometry, starsMaterial);
+      scene.add(starField);
+    }
+
+    // Call the function to create stars
+    createStars();
+    
+    camera.position.z = 7;
+    camera.position.y = -2;
+    camera.position.x = -10;
 
     const directionalLight = new THREE.DirectionalLight(0xffffff, 5);
-    directionalLight.position.set(1, 1, 1);
+    directionalLight.position.set(1, 5 ,10);
     directionalLight.castShadow = true;
     scene.add(directionalLight);
+
     const animateSphere = () => {
       //sphere.rotation.x += 0.01;
       sphere.rotation.y += 0.01;
+      const diagonalMovement = 0.01 * Math.sqrt(2); // Adjust the factor for desired speed
+
+      // Update position based on rotation
+      camera.position.x += 2* diagonalMovement * Math.sin(sphere.rotation.y);
+      camera.position.y += 0.3 * diagonalMovement * Math.sin(sphere.rotation.y);
+      camera.position.z += diagonalMovement * Math.cos(sphere.rotation.y);
+
       requestAnimationFrame(animateSphere);
       renderer.render(scene, camera);
     };
     
+    
     animateSphere();
+
     
     return () => {
       window.removeEventListener('resize', handleResize);
