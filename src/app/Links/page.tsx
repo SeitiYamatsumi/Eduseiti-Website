@@ -21,7 +21,13 @@ const links: Link[] = [
     title: 'Instagram',
     description: 'Personal profile',
     url: 'https://www.instagram.com/seiti.y/',
+  },
+  {
+    title: 'Line',
+    description: 'line profile',
+    url: 'https://line.me/ti/p/s87PENk_EU',
   }
+
   // Add more links as needed
 ];
 
