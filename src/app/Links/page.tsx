@@ -1,10 +1,18 @@
 'use client';
 import { useEffect } from 'react';
 import * as THREE from 'three';
-import { ChakraProvider, Flex, Image, Box, Heading } from '@chakra-ui/react';
+import { ChakraProvider, Flex, Image, Box, Heading, extendTheme } from '@chakra-ui/react';
 import LinkCard from '../components/LinkCard';
 import '../globals.css';
+import'@fontsource/poppins';
 
+const theme = extendTheme({
+  fonts: {
+    body: "Poppins, sans-serif",
+    heading: "Poppins, sans-serif",
+    // You can add other font styles here if needed
+  },
+});
 interface Link {
   title: string;
   description: string;
@@ -23,7 +31,7 @@ const links: Link[] = [
     url: 'https://www.instagram.com/seiti.y/',
   },
   {
-    title: 'Line',
+    title: 'LINE',
     description: 'line profile',
     url: 'https://line.me/ti/p/s87PENk_EU',
   }
@@ -131,7 +139,7 @@ const Links: React.FC = () => {
   return (
     <div style={{ position: "relative", maxHeight: "100%", overflow: "auto"}}>
       
-      <ChakraProvider>
+      <ChakraProvider theme={theme}>
         
         <Flex
           direction="column"

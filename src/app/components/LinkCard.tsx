@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from "react";
 import { Box, Heading, Text } from '@chakra-ui/react';
+import "../globals.css";
 
 interface LinkCardProps {
   title: string;
@@ -30,7 +31,8 @@ const LinkCard: React.FC<LinkCardProps> = ({ title, description, url }) => {
         _hover={{ 
           bgGradient:'linear(to-l, purple.200,purple.100)',
           boxShadow: '0 0 20px 5px #787be0',
-          "& h2": { color: "black" }
+          "& h2": { color: "black" },
+          rounded: "full"
         }}  
         rounded="full"  // Use rounded without quotes
         transition="all 0.3s"
