@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from "react";
 import { Box, Heading, Text } from '@chakra-ui/react';
 
 interface LinkCardProps {
@@ -9,8 +9,16 @@ interface LinkCardProps {
 }
 
 const LinkCard: React.FC<LinkCardProps> = ({ title, description, url }) => {
+  const [isClicked, setIsClicked] = useState(false);
+
+  const handleClick = () => {
+    setIsClicked(true);
+    setTimeout(() => {
+      window.open(url, "_blank");
+      setIsClicked(false);
+    }, 500);
+  };
   return (
-    <a href={url} target="_blank" rel="noopener noreferrer">
       <Box
         borderRadius="1px"
         overflow="hidden"
@@ -19,16 +27,21 @@ const LinkCard: React.FC<LinkCardProps> = ({ title, description, url }) => {
         my={4}
         p={4}
         textAlign="center"
-        _hover={{ bg: 'gray.300' }}
+        _hover={{ 
+          bgGradient:'linear(to-l, purple.200,purple.100)',
+          boxShadow: '0 0 20px 5px #787be0',
+          "& h2": { color: "black" }
+        }}  
         rounded="full"  // Use rounded without quotes
         transition="all 0.3s"
-        bg="rgba(240, 240, 240, 0.8)"
+        bgGradient='linear(to-l, blue.500,purple.500)'
+        onClick={handleClick}
+        cursor={isClicked ? "not-allowed" : "pointer"}
       >
-        <Heading fontSize="xl" color="blue.900">
+        <Heading fontSize="lg" color="white">
           {title}
         </Heading>
       </Box>
-    </a>
   );
 };
 

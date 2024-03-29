@@ -1,8 +1,9 @@
 'use client';
 import { useEffect } from 'react';
 import * as THREE from 'three';
-import { ChakraProvider, Flex, Image, Box } from '@chakra-ui/react';
+import { ChakraProvider, Flex, Image, Box, Heading } from '@chakra-ui/react';
 import LinkCard from '../components/LinkCard';
+import '../globals.css';
 
 interface Link {
   title: string;
@@ -13,35 +14,30 @@ interface Link {
 const links: Link[] = [
   {
     title: 'LinkedIn',
-    description: 'Description for Link 1',
-    url: 'https://example.com/link1',
-  },
-  {
-    title: 'GitHub',
-    description: 'Description for Link 2',
-    url: 'https://example.com/link2',
+    description: 'Professional profile',
+    url: 'https://www.linkedin.com/in/eduardo-seiti-yamatsumi/',
   },
   {
     title: 'Instagram',
-    description: 'Description for Link 2',
-    url: 'https://example.com/link2',
-  },
+    description: 'Personal profile',
+    url: 'https://www.instagram.com/seiti.y/',
+  }
   // Add more links as needed
 ];
 
 const Links: React.FC = () => {
   useEffect(() => {
     const canvas = document.getElementById('MyCanvas') as HTMLCanvasElement;
-    
+
     const scene = new THREE.Scene();
-    
+
     const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
-    
+
     const renderer = new THREE.WebGLRenderer({
       canvas: canvas,
     });
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-    
+
     const handleResize = () => {
       const newWidth = window.innerWidth;
       const newHeight = window.innerHeight;
@@ -49,7 +45,7 @@ const Links: React.FC = () => {
       camera.updateProjectionMatrix();
       renderer.setSize(newWidth, newHeight);
     };
-    
+
     window.addEventListener('resize', handleResize);
     
     const geometry = new THREE.SphereGeometry(1, 32, 32);
@@ -68,7 +64,7 @@ const Links: React.FC = () => {
     const sphereMaterial = new THREE.MeshBasicMaterial({ map: milkyWayTexture, side: THREE.BackSide });
     const backgroundSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
     // Reduce the brightness by adjusting the color
-    backgroundSphere.material.color = new THREE.Color(0.13, 0.11, 0.2); // Adjust the RGB values as needed
+    backgroundSphere.material.color = new THREE.Color(0.15, 0.05, 0.3); // Adjust the RGB values as needed
     scene.add(backgroundSphere);
     sphereGeometry.rotateZ(Math.PI /7)
     sphereGeometry.rotateY(Math.PI /4)
@@ -95,8 +91,8 @@ const Links: React.FC = () => {
     createStars();
     
     camera.position.z = 7;
-    camera.position.y = -2;
-    camera.position.x = -10;
+    camera.position.y = 2;
+    camera.position.x = -6;
 
     const directionalLight = new THREE.DirectionalLight(0xffffff, 5);
     directionalLight.position.set(1, 5 ,10);
@@ -127,21 +123,18 @@ const Links: React.FC = () => {
   }, []);
 
   return (
-    <div>
-      <canvas id="MyCanvas" style={{ width: '100%', height: '100vh' }}></canvas>  
+    <div style={{ position: "relative", maxHeight: "100%", overflow: "auto"}}>
       
       <ChakraProvider>
+        
         <Flex
           direction="column"
           align="center"
           justify="center"
-          minH="100vh"
-          overflowY="auto"
           py={20}
-          bg="rgba(0, 0, 0, 0.1)"
-          position="absolute"
-          top="0"
           width="100%"
+          position="relative"
+          zIndex={1}
         >
           <Image
             src="./assets/Seiti.jpg"
@@ -152,6 +145,9 @@ const Links: React.FC = () => {
             borderRadius="full"
             fit="cover"
           />
+          <Heading size="lg" color="white" textAlign="center" pt={2} pb={8} >
+            Yamatsumi Eduardo Seiti
+          </Heading>
           <Box width="70%" maxWidth="1200px">
             {links.map((link, index) => (
               <LinkCard key={index} {...link} />
@@ -159,7 +155,14 @@ const Links: React.FC = () => {
           </Box>
         </Flex>
       </ChakraProvider>
-    </div>
+      <canvas id="MyCanvas" style={{
+        position: "fixed",
+        top: 0,
+        width: "100%",
+        height: "100vh",
+        zIndex: 0
+      }}></canvas>
+      </div>
   );
 };
 
