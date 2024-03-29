@@ -78,7 +78,7 @@ const Links: React.FC = () => {
     const sphereMaterial = new THREE.MeshBasicMaterial({ map: milkyWayTexture, side: THREE.BackSide });
     const backgroundSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
     // Reduce the brightness by adjusting the color
-    backgroundSphere.material.color = new THREE.Color(0.15, 0.08, 0.3); // Adjust the RGB values as needed
+    backgroundSphere.material.color = new THREE.Color(0.13, 0.08, 0.3); // Adjust the RGB values as needed
     scene.add(backgroundSphere);
     sphereGeometry.rotateZ(Math.PI /7)
     sphereGeometry.rotateY(Math.PI /4)
