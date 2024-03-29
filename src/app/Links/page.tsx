@@ -145,7 +145,7 @@ const Links: React.FC = () => {
             borderRadius="full"
             fit="cover"
           />
-          <Heading size="lg" color="white" textAlign="center" pt={2} pb={8} >
+          <Heading size="md" color="white" textAlign="center" pt={2} pb={8} >
             Yamatsumi Eduardo Seiti
           </Heading>
           <Box width="70%" maxWidth="1200px">
