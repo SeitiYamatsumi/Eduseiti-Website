@@ -50,21 +50,21 @@ const Links: React.FC = () => {
     
     const geometry = new THREE.SphereGeometry(1, 32, 32);
     const textureLoader = new THREE.TextureLoader();
-    const texture = textureLoader.load('./assets/fullmapb.jpg'); // Replace with the path to your image
+    const texture = textureLoader.load('./assets/fullmapb.webp'); // Replace with the path to your image
     const material = new THREE.MeshStandardMaterial({ map: texture });
     const sphere = new THREE.Mesh(geometry, material);
     scene.add(sphere);
 
     // Load Milky Way texture
     const loader = new THREE.TextureLoader();
-    const milkyWayTexture = loader.load('./assets/milky way.jpg');
+    const milkyWayTexture = loader.load('./assets/milky way.webp');
     
     // Create sphere for the Milky Way background
     const sphereGeometry = new THREE.SphereGeometry(900, 32, 32); // Large sphere to encompass the scene
     const sphereMaterial = new THREE.MeshBasicMaterial({ map: milkyWayTexture, side: THREE.BackSide });
     const backgroundSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
     // Reduce the brightness by adjusting the color
-    backgroundSphere.material.color = new THREE.Color(0.15, 0.05, 0.3); // Adjust the RGB values as needed
+    backgroundSphere.material.color = new THREE.Color(0.15, 0.08, 0.3); // Adjust the RGB values as needed
     scene.add(backgroundSphere);
     sphereGeometry.rotateZ(Math.PI /7)
     sphereGeometry.rotateY(Math.PI /4)
@@ -137,7 +137,7 @@ const Links: React.FC = () => {
           zIndex={1}
         >
           <Image
-            src="./assets/Seiti.jpg"
+            src="./assets/Seiti.webp"
             alt="Logo"
             boxSize={120}
             align="center"
