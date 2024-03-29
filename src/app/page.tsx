@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 export default function Home() {
   
   useEffect(() => {
-    const redirectTo = "/links";
+    const redirectTo = "/Links";
     const redirectTimeout = setTimeout(() => {
       window.location.href = redirectTo;
     }, 500); // Adjust the time delay as needed
