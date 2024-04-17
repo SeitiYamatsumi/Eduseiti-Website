@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { ChakraProvider, Flex, Image, Box, Heading, extendTheme } from '@chakra-ui/react';
 import LinkCard from '../components/LinkCard';
 import '../globals.css';
-import'@fontsource/poppins';
+import '@fontsource/poppins';
 
 const theme = extendTheme({
   fonts: {
@@ -45,7 +45,8 @@ const Links: React.FC = () => {
 
     const scene = new THREE.Scene();
 
-    const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 10000);
+    camera.position.z = 300; // Adjusted camera position to be inside the torus
 
     const renderer = new THREE.WebGLRenderer({
       canvas: canvas,
@@ -61,86 +62,118 @@ const Links: React.FC = () => {
     };
 
     window.addEventListener('resize', handleResize);
-    
-    const geometry = new THREE.SphereGeometry(1, 32, 32);
-    const textureLoader = new THREE.TextureLoader();
-    const texture = textureLoader.load('./assets/fullmapb.webp'); // Replace with the path to your image
-    const material = new THREE.MeshStandardMaterial({ map: texture });
-    const sphere = new THREE.Mesh(geometry, material);
-    scene.add(sphere);
 
     // Load Milky Way texture
     const loader = new THREE.TextureLoader();
     const milkyWayTexture = loader.load('./assets/milky way.webp');
-    
-    // Create sphere for the Milky Way background
-    const sphereGeometry = new THREE.SphereGeometry(900, 32, 32); // Large sphere to encompass the scene
-    const sphereMaterial = new THREE.MeshBasicMaterial({ map: milkyWayTexture, side: THREE.BackSide });
-    const backgroundSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-    // Reduce the brightness by adjusting the color
-    backgroundSphere.material.color = new THREE.Color(0.13, 0.08, 0.3); // Adjust the RGB values as needed
-    scene.add(backgroundSphere);
-    sphereGeometry.rotateZ(Math.PI /7)
-    sphereGeometry.rotateY(Math.PI /4)
-// Function to create random stars
-    function createStars() {
+    milkyWayTexture.wrapS = THREE.RepeatWrapping;
+    milkyWayTexture.wrapT = THREE.RepeatWrapping;
+    // Create torus for the Milky Way background
+    const torusGeometry = new THREE.TorusGeometry(5000, 300, 32, 100); // Adjusted torus geometry
+    const torusMaterial = new THREE.MeshBasicMaterial({ map: milkyWayTexture, side: THREE.DoubleSide, opacity: 0.8, transparent: true });
+    const backgroundTorus = new THREE.Mesh(torusGeometry, torusMaterial);
+    backgroundTorus.rotation.y = Math.PI / 2;
+    backgroundTorus.material.color = new THREE.Color(0.13, 0.08, 0.3); // Adjusted color
+    scene.add(backgroundTorus);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2);
+    scene.add(ambientLight);
+    // Function to create random stars and planets
+    function createstars() {
+      const objects = new THREE.Group();
+
+      // Create stars
       const starsGeometry = new THREE.BufferGeometry();
       const starsPositions = [];
 
       for (let i = 0; i < 1000; i++) {
-          const x = THREE.MathUtils.randFloatSpread(800);
-          const y = THREE.MathUtils.randFloatSpread(800);
-          const z = THREE.MathUtils.randFloatSpread(800);
+        const x = THREE.MathUtils.randFloatSpread(1000); // Adjusted spread for torus size
+        const y = THREE.MathUtils.randFloatSpread(1000)+2500
+        const z = THREE.MathUtils.randFloatSpread(1000);
+        const distance = Math.sqrt(x * x + y * y + z * z);
+
+        // Ensure stars are not too close to the camera
+        if (distance > 10) {
           starsPositions.push(x, y, z);
+        }
       }
 
       starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starsPositions, 3));
 
       const starsMaterial = new THREE.PointsMaterial({ color: 0xffefdf });
       const starField = new THREE.Points(starsGeometry, starsMaterial);
-      scene.add(starField);
+      objects.add(starField);
+
+      return objects;
     }
 
-    // Call the function to create stars
-    createStars();
+  function createPlanets(numberOfPlanets: number): THREE.Group {
+      const objects: THREE.Group = new THREE.Group();
+      const geometry = new THREE.SphereGeometry(10, 32, 32);
+      const texture = new THREE.TextureLoader().load('./assets/fullmapb.webp');
+      const material = new THREE.MeshBasicMaterial({map: texture, side: THREE.DoubleSide, opacity: 0.8, transparent: true});
+
+      const positions = new Float32Array(numberOfPlanets * 3);
+
+      // Define torus parameters
+      const torusRadius = 5000; // Mesmo raio do toroide
+      const tubeRadius = 300; // Mesmo raio do toroide
+
+      for (let i = 0; i < numberOfPlanets; i++) {
+          // Gerar ângulo aleatório na circunferência do toroide
+          const theta = Math.random() * Math.PI * 2;
+          // Gerar posição aleatória no raio do toroide
+          const phi = Math.random() * Math.PI * 2;
+          const radius = Math.random() * (tubeRadius); // Ajustado para o raio do toroide
+
+          // Converter coordenadas polares para coordenadas cartesianas
+          const x = (torusRadius + tubeRadius * Math.cos(phi)) * Math.cos(theta);
+          const y = tubeRadius * Math.sin(phi);
+          const z = (torusRadius + tubeRadius * Math.cos(phi)) * Math.sin(theta);
+
+          const index = i * 3;
+          positions[index] = x;
+          positions[index + 1] = y;
+          positions[index + 2] = z;
+      }
+
+      const geometryPositions = new THREE.BufferAttribute(positions, 3);
+      geometry.setAttribute('position', geometryPositions);
+
+      for (let i = 0; i < numberOfPlanets; i++) {
+          const mesh = new THREE.Mesh(geometry, material);
+          mesh.position.fromBufferAttribute(geometryPositions, i);
+          objects.add(mesh);
+      }
+
+      return objects;
+  }
+    const planetsGroup = createPlanets(10);
+    scene.add(planetsGroup);
+    //const starsGroup = createstars();
     
-    camera.position.z = 7;
-    camera.position.y = 2;
-    camera.position.x = -6;
+    camera.position.y = 5000
+    //camera.position.x = 2000
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 5);
-    directionalLight.position.set(1, 5 ,10);
-    directionalLight.castShadow = true;
-    scene.add(directionalLight);
+    const animate = () => {
+      // Rotate the torus on the x axis
+      backgroundTorus.rotation.z += 0.001;
 
-    const animateSphere = () => {
-      //sphere.rotation.x += 0.01;
-      sphere.rotation.y += 0.01;
-      const diagonalMovement = 0.01 * Math.sqrt(2); // Adjust the factor for desired speed
 
-      // Update position based on rotation
-      camera.position.x += 2* diagonalMovement * Math.sin(sphere.rotation.y);
-      camera.position.y += 0.3 * diagonalMovement * Math.sin(sphere.rotation.y);
-      camera.position.z += diagonalMovement * Math.cos(sphere.rotation.y);
-
-      requestAnimationFrame(animateSphere);
+      requestAnimationFrame(animate);
       renderer.render(scene, camera);
     };
-    
-    
-    animateSphere();
 
-    
+    animate();
     return () => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
 
   return (
-    <div style={{ position: "relative", maxHeight: "100%", overflow: "auto"}}>
-      
+    <div style={{ position: "relative", maxHeight: "100%", overflow: "auto" }}>
+
       <ChakraProvider theme={theme}>
-        
+
         <Flex
           direction="column"
           align="center"
@@ -176,7 +209,7 @@ const Links: React.FC = () => {
         height: "100vh",
         zIndex: 0
       }}></canvas>
-      </div>
+    </div>
   );
 };
 
